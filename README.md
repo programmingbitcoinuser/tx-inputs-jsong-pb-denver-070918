@@ -25,7 +25,31 @@ Parse the transaction inputs
 
 
 ```python
-from tx import TxIn
+from tx import Tx, TxIn
+from helper import (
+    little_endian_to_int,
+    read_varint,
+)
+
+class Tx(Tx):
+
+    @classmethod
+    def parse(cls, s):
+        '''Takes a byte stream and parses the transaction at the start
+        return a Tx object
+        '''
+        # s.read(n) will return n bytes
+        # version has 4 bytes, little-endian, interpret as int
+        version = little_endian_to_int(s.read(4))
+        # num_inputs is a varint, use read_varint(s)
+        # each input needs parsing
+        inputs = []
+        # leave outputs and locktime empty for now
+        outputs = []
+        locktime = []
+        # return an instance of the class... cls(version, inputs, outputs, locktime)
+        return cls(version, inputs, outputs, locktime)
+
 
 class TxIn(TxIn):
 
@@ -36,11 +60,15 @@ class TxIn(TxIn):
         '''
         # s.read(n) will return n bytes
         # prev_tx is 32 bytes, little endian
+        prev_tx = s.read(32)[::-1]
         # prev_index is 4 bytes, little endian, interpret as int
+        prev_index = little_endian_to_int(s.read(4))
         # script_sig is a variable field (length followed by the data)
         # get the length by using read_varint(s)
+        script_sig_length = read_varint(s)
+        script_sig = s.read(script_sig_length)
         # sequence is 4 bytes, little-endian, interpret as int
+        sequence = little_endian_to_int(s.read(4))
         # return an instance of the class (cls(...))
-        pass
-
+        return cls(prev_tx, prev_index, script_sig, sequence)
 ```

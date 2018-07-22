@@ -25,7 +25,35 @@ Parse the transaction inputs
 
 
 ```python
-from tx import TxIn
+from tx import Tx, TxIn
+from helper import (
+    little_endian_to_int,
+    read_varint,
+)
+
+class Tx(Tx):
+
+    @classmethod
+    def parse(cls, s):
+        '''Takes a byte stream and parses the transaction at the start
+        return a Tx object
+        '''
+        # s.read(n) will return n bytes
+        # version has 4 bytes, little-endian, interpret as int
+        version = little_endian_to_int(s.read(4))
+        # num_inputs is a varint, use read_varint(s)
+        # each input needs parsing
+        num_inputs = read_varint(s)
+        # each input needs parsing
+        inputs = []
+        for _ in range(num_inputs):
+            inputs.append(TxIn.parse(s))
+        # leave outputs and locktime empty for now
+        outputs = []
+        locktime = []
+        # return an instance of the class... cls(version, inputs, outputs, locktime)
+        return cls(version, inputs, outputs, locktime)
+
 
 class TxIn(TxIn):
 
