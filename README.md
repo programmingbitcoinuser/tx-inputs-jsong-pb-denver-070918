@@ -41,6 +41,7 @@ class Tx(Tx):
         # s.read(n) will return n bytes
         # version has 4 bytes, little-endian, interpret as int
         version = little_endian_to_int(s.read(4))
+
         # num_inputs is a varint, use read_varint(s)
         # each input needs parsing
         inputs = []
