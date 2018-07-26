@@ -61,15 +61,9 @@ class TxIn(TxIn):
         '''
         # s.read(n) will return n bytes
         # prev_tx is 32 bytes, little endian
-        prev_tx = s.read(32)[::-1]
         # prev_index is 4 bytes, little endian, interpret as int
-        prev_index = little_endian_to_int(s.read(4))
         # script_sig is a variable field (length followed by the data)
         # get the length by using read_varint(s)
-        script_sig_length = read_varint(s)
-        script_sig = s.read(script_sig_length)
         # sequence is 4 bytes, little-endian, interpret as int
-        sequence = little_endian_to_int(s.read(4))
         # return an instance of the class (cls(...))
-        return cls(prev_tx, prev_index, script_sig, sequence)
 ```
